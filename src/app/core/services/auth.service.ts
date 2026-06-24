@@ -160,31 +160,20 @@ export class AuthService {
   }
 
   sendOtp(email: string) : Observable<OtpResponse> {
-    return this.http.get<OtpResponse>("http://localhost:8080/mail/verify-otp", {
-      params: new HttpParams().set('e', email)
+    return this.http.get<OtpResponse>("http://localhost:8080/mail/send-otp", {
+      params: new HttpParams().set("email", email),
     });
   }
 
-  verifyOtp(payload: OtpPayload): Observable<AuthResponse> {
+  verifyOtp(payload: OtpPayload): Observable<any> {
     this.patch({ isLoading: true });
     return this.http
-      .post<AuthResponse>("http://localhost:8080/mail/verify-otp", payload)
-      .pipe(
-        tap(({ token, user }) => {
-          this.persist(token, user);
-          this.patch({ token, user, isAuthenticated: true, isLoading: false });
-          this.router.navigate(["/dashboard"]);
-        }),
-        catchError((err) => {
-          this.patch({ isLoading: false });
-          return throwError(() => err);
-        }),
-      );
+      .post<any>("http://localhost:8080/mail/verify-otp", payload)
   }
 
   resendOtp(email: string): Observable<OtpResponse> {
-    return this.http.get<OtpResponse>("http://localhost:8080/mail/resend-otp", {
-      params: new HttpParams().set("e", email),
+    return this.http.post<OtpResponse>("http://localhost:8080/mail/resend-otp", {
+      params: new HttpParams().set("email", email),
     });
   }
 

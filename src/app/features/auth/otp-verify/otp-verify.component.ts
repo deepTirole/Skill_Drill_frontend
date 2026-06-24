@@ -5,7 +5,7 @@
 
 import { Component, OnInit, OnDestroy, inject, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { OtpInputComponent } from '../../../shared/components/otp-input/otp-input.component';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -18,6 +18,7 @@ import { AuthService } from '../../../core/services/auth.service';
 export class OtpVerifyComponent implements OnInit, OnDestroy {
   private readonly auth  = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
+  private router = inject(Router)
 
   @ViewChild(OtpInputComponent) otpInputRef?: OtpInputComponent;
 
@@ -35,7 +36,7 @@ export class OtpVerifyComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const emailParam = this.route.snapshot.queryParamMap.get('email') ?? '';
     this.email.set(emailParam);
-    this.sendOtp();
+    // this.sendOtp();
     this.startCountdown();
   }
 
@@ -46,7 +47,9 @@ export class OtpVerifyComponent implements OnInit, OnDestroy {
   sendOtp() {
     this.auth.sendOtp(this.email()).subscribe({
       next:  (res) => {},
-      error: (res) => {}
+      error: (err) => {
+        this.errorMsg.set(err?.error?.message ?? 'Failed to send OTP. Please try again.');
+      }
     })
   }
 
@@ -84,6 +87,9 @@ export class OtpVerifyComponent implements OnInit, OnDestroy {
     this.errorMsg.set(null);
 
     this.auth.verifyOtp({ email: this.email(), otp: this.otp() }).subscribe({
+      next: (res) => {
+        this.router.navigate(['/auth/login']);
+      },
       error: (err) => {
         this.isLoading.set(false);
         this.errorMsg.set(err?.error?.message ?? 'Invalid code. Please try again.');
