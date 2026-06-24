@@ -1,0 +1,189 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Skill_Drill — Global Styles
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800;9..40,900&family=DM+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design Tokens ─────────────────────────────────────────────────────────── */
+:root {
+  /* Light theme */
+  --bg-base:           #FDFBF7;
+  --bg-surface:        #FFFFFF;
+  --bg-surface-alt:    #F5F3EE;
+  --border-structural: #1A1A1A;
+  --border-subtle:     #E4E0D8;
+  --text-primary:      #1A1A1A;
+  --text-secondary:    #5C5347;
+  --text-tertiary:     #9B8E80;
+  --accent-violet:     #4B2D8F;
+  --accent-violet-lt:  #EDE8F8;
+  --accent-cyan:       #0099AA;
+  --accent-emerald:    #0A7A6A;
+  --card-shadow:       0 1px 3px rgba(26,26,26,.06), 0 4px 16px rgba(26,26,26,.04);
+  --card-shadow-hover: 0 2px 8px rgba(26,26,26,.10), 0 8px 24px rgba(26,26,26,.06);
+}
+
+.dark {
+  --bg-base:           #0B0F19;
+  --bg-surface:        rgba(255,255,255,.04);
+  --bg-surface-alt:    rgba(255,255,255,.02);
+  --border-structural: rgba(255,255,255,.15);
+  --border-subtle:     rgba(255,255,255,.08);
+  --text-primary:      #F0EEE8;
+  --text-secondary:    #A09C92;
+  --text-tertiary:     #6B6560;
+  --accent-violet:     #9B7FE8;
+  --accent-violet-lt:  rgba(155,127,232,.12);
+  --accent-cyan:       #00F0FF;
+  --accent-emerald:    #2DD4A4;
+  --card-shadow:       0 1px 3px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+  --card-shadow-hover: 0 2px 8px rgba(0,0,0,.5), 0 8px 24px rgba(0,240,255,.05);
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    transition: background-color .3s ease, color .3s ease;
+    scroll-behavior: smooth;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 2px; }
+  :focus-visible { outline: 2px solid var(--accent-cyan); outline-offset: 2px; }
+  textarea { resize: none; font-family: inherit; }
+}
+
+/* ── Components ────────────────────────────────────────────────────────────── */
+@layer components {
+
+  .sd-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 1rem;
+    box-shadow: var(--card-shadow);
+    transition: box-shadow .2s ease, border-color .2s ease;
+  }
+  .sd-card:hover { box-shadow: var(--card-shadow-hover); }
+
+  .sd-btn-primary {
+    background: var(--text-primary);
+    color: var(--bg-base);
+    border-radius: .625rem;
+    font-weight: 600;
+    font-size: .875rem;
+    padding: .625rem 1.25rem;
+    border: none;
+    cursor: pointer;
+    transition: opacity .15s ease, transform .15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .sd-btn-primary:hover:not(:disabled) { opacity: .82; transform: translateY(-1px); }
+  .sd-btn-primary:active:not(:disabled) { transform: translateY(0); }
+  .sd-btn-primary:disabled { opacity: .38; cursor: not-allowed; }
+
+  .sd-btn-ghost {
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+    background: transparent;
+    border-radius: .625rem;
+    font-weight: 500;
+    font-size: .875rem;
+    padding: .625rem 1.25rem;
+    cursor: pointer;
+    transition: all .15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .sd-btn-ghost:hover:not(:disabled) {
+    border-color: var(--border-structural);
+    color: var(--text-primary);
+    background: var(--bg-surface-alt);
+  }
+  .sd-btn-ghost:disabled { opacity: .38; cursor: not-allowed; }
+
+  .sd-badge-violet {
+    background: var(--accent-violet-lt);
+    color: var(--accent-violet);
+    border: 1px solid color-mix(in srgb, var(--accent-violet) 22%, transparent);
+    border-radius: .375rem;
+    font-size: .6875rem;
+    font-weight: 700;
+    padding: .2rem .6rem;
+    letter-spacing: .04em;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* ── Utilities ─────────────────────────────────────────────────────────────── */
+@layer utilities {
+
+  /* Laser scan overlay — applied to the resume drop zone */
+  .scan-active { position: relative; overflow: hidden; }
+  .scan-active::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--accent-cyan) 50%,
+      transparent 100%
+    );
+    box-shadow: 0 0 8px 2px color-mix(in srgb, var(--accent-cyan) 50%, transparent),
+                0 0 24px 4px color-mix(in srgb, var(--accent-cyan) 25%, transparent);
+    animation: laserScan 2.6s cubic-bezier(.4,0,.6,1) infinite;
+    z-index: 10;
+    pointer-events: none;
+  }
+  /* Softer violet laser in light mode */
+  :not(.dark) .scan-active::before {
+    background: linear-gradient(90deg, transparent 0%, var(--accent-violet) 50%, transparent 100%);
+    box-shadow: 0 0 8px 2px color-mix(in srgb, var(--accent-violet) 40%, transparent),
+                0 0 24px 4px color-mix(in srgb, var(--accent-violet) 15%, transparent);
+  }
+
+  @keyframes laserScan {
+    0%   { top: -2px; opacity: 0; }
+    5%   { opacity: 1; }
+    95%  { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  /* Audio waveform bars — used inline in SVG via style attr */
+  @keyframes waveBar {
+    0%, 100% { transform: scaleY(.35); opacity: .45; }
+    50%       { transform: scaleY(1);   opacity: 1;   }
+  }
+
+  /* Spin utility for loading rings */
+  @keyframes sdSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .sd-spin { animation: sdSpin 1.4s linear infinite; }
+
+  /* Slide-up entry */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .sd-slide-up { animation: slideUp .3s ease-out; }
+
+  /* Line clamps */
+  .line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
+  .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+}

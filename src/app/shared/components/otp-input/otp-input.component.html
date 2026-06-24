@@ -1,0 +1,20 @@
+<!-- Skill_Drill — OTP Input (Premium Overhaul) -->
+<div class="flex items-center gap-3" (paste)="onPaste($event)">
+  @for (digit of digits(); track $index) {
+    <input #digitInput
+           type="text" inputmode="numeric" maxlength="1"
+           [value]="digit"
+           (input)="onInput($index, $event)"
+           (keydown)="onKeydown($index, $event)"
+           (focus)="onFocus($index, $event)"
+           placeholder="·"
+           autocomplete="one-time-code"
+           class="w-12 h-14 text-center text-xl font-bold rounded-xl transition-all duration-150 focus:outline-none"
+           style="background: var(--bg-surface);
+                  border: 1.5px solid var(--border-subtle);
+                  color: var(--text-primary);
+                  caret-color: var(--accent-cyan);"
+           onfocus="this.style.borderColor='var(--accent-cyan)'; this.style.boxShadow='0 0 0 3px color-mix(in srgb, var(--accent-cyan) 15%, transparent)';"
+           onblur="this.style.borderColor='var(--border-subtle)'; this.style.boxShadow='none';" />
+  }
+</div>

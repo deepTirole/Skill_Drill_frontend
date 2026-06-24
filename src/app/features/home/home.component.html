@@ -1,0 +1,186 @@
+<!-- Skill_Drill — Home Landing (Premium) -->
+<div class="min-h-screen" style="background:var(--bg-base); color:var(--text-primary);">
+  <sd-navbar />
+
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <!-- Ambient blobs -->
+    <div class="pointer-events-none absolute inset-0">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[320px] rounded-full blur-3xl"
+           style="background:radial-gradient(ellipse,color-mix(in srgb,var(--accent-violet) 18%,transparent) 0%,transparent 70%);"></div>
+      <div class="absolute top-24 right-1/4 w-[280px] h-[200px] rounded-full blur-3xl"
+           style="background:radial-gradient(ellipse,color-mix(in srgb,var(--accent-cyan) 12%,transparent) 0%,transparent 70%);"></div>
+    </div>
+
+    <div class="relative max-w-6xl mx-auto px-6 pt-20 pb-28">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+        <!-- Copy -->
+        <div class="space-y-8">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+               style="border:1px solid var(--border-subtle); background:var(--bg-surface);">
+            <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:var(--accent-emerald);"></span>
+            <span class="text-xs font-semibold uppercase tracking-wide" style="color:var(--text-secondary);">
+              AI-Powered Mock Interviews
+            </span>
+          </div>
+
+          <h1 class="text-5xl lg:text-6xl font-black tracking-tight leading-[1.06]">
+            Forge elite<br/>
+            <span class="relative inline-block">
+              interview
+              <span class="absolute -bottom-1 left-0 right-0 h-[3px] rounded-full"
+                    style="background:linear-gradient(90deg,var(--accent-cyan),var(--accent-violet));"></span>
+            </span><br/>
+            instincts.
+          </h1>
+
+          <p class="text-lg leading-relaxed max-w-md" style="color:var(--text-secondary);">
+            Adaptive AI sessions calibrated to your experience. Drill harder. Learn faster. Land the role.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3">
+            @if (isAuth$ | async) {
+              <a routerLink="/dashboard" class="sd-btn-primary">
+                Go to Dashboard
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            } @else {
+              <a routerLink="/auth/register" class="sd-btn-primary">
+                Start for free
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+              <a routerLink="/auth/login" class="sd-btn-ghost">Sign in</a>
+            }
+          </div>
+
+          <p class="text-xs" style="color:var(--text-tertiary);">
+            No credit card &middot; Free tier &middot; 2-minute setup
+          </p>
+        </div>
+
+        <!-- Score card mockup -->
+        <div class="hidden lg:flex justify-end">
+          <div class="relative w-80">
+            <div class="sd-card p-6 space-y-5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-xs uppercase tracking-widest mb-1" style="color:var(--text-tertiary);">Session Complete</p>
+                  <p class="text-sm font-semibold">Senior Frontend Engineer</p>
+                </div>
+                <span class="sd-badge-violet">HARD</span>
+              </div>
+
+              <div class="text-center py-4"
+                   style="border-top:1px solid var(--border-subtle); border-bottom:1px solid var(--border-subtle);">
+                <p class="text-5xl font-black">8.4</p>
+                <p class="text-xs mt-1" style="color:var(--text-tertiary);">out of 10</p>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-sm" style="color:var(--text-secondary);">Elo Rating</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-semibold">1,847</span>
+                  <span class="text-xs font-semibold" style="color:var(--accent-emerald);">+23</span>
+                </div>
+              </div>
+
+              @for (m of [['Clarity',85],['Depth',72],['Accuracy',91]]; track m[0]) {
+                <div class="space-y-1.5">
+                  <div class="flex justify-between text-xs">
+                    <span style="color:var(--text-secondary);">{{ m[0] }}</span>
+                    <span class="font-medium">{{ m[1] }}%</span>
+                  </div>
+                  <div class="h-1 rounded-full overflow-hidden" style="background:var(--border-subtle);">
+                    <div class="h-full rounded-full"
+                         style="background:linear-gradient(90deg,var(--accent-cyan),var(--accent-violet));"
+                         [style.width.%]="m[1]">
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Floating chip -->
+            <div class="absolute -top-4 -left-8 rounded-xl px-4 py-2.5 max-w-[210px]"
+                 style="background:var(--text-primary);">
+              <p class="text-xs leading-snug font-medium" style="color:var(--bg-base);">
+                "Explain virtual DOM reconciliation…"
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats strip -->
+  <section style="border-top:1px solid var(--border-subtle); border-bottom:1px solid var(--border-subtle); background:var(--bg-surface-alt);">
+    <div class="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+      @for (s of stats; track s.label) {
+        <div class="text-center space-y-1">
+          <p class="text-2xl font-black">{{ s.value }}</p>
+          <p class="text-xs uppercase tracking-widest" style="color:var(--text-tertiary);">{{ s.label }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Features grid -->
+  <section id="features" class="py-24">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="mb-14 space-y-2">
+        <p class="text-xs uppercase tracking-[.2em] font-semibold" style="color:var(--accent-violet);">Platform features</p>
+        <h2 class="text-3xl font-bold tracking-tight">
+          Everything you need to ace<br/>the technical interview.
+        </h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 rounded-2xl overflow-hidden"
+           style="border:1px solid var(--border-subtle);">
+        @for (f of features; track f.title; let i = $index) {
+          <div class="p-8 space-y-4 transition-colors duration-150 cursor-default"
+               style="background:var(--bg-base);"
+               [style.borderRight]="i % 2 === 0 ? '1px solid var(--border-subtle)' : 'none'"
+               [style.borderBottom]="i < features.length - 2 ? '1px solid var(--border-subtle)' : 'none'"
+               onmouseenter="this.style.background='var(--bg-surface-alt)'"
+               onmouseleave="this.style.background='var(--bg-base)'">
+
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                 style="background:var(--accent-violet-lt);">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"
+                   style="color:var(--accent-violet);">
+                <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="f.icon"/>
+              </svg>
+            </div>
+
+            <div>
+              <h3 class="text-base font-semibold mb-1.5">{{ f.title }}</h3>
+              <p class="text-sm leading-relaxed" style="color:var(--text-secondary);">{{ f.description }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="border-top:1px solid var(--border-subtle);" class="py-8">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded flex items-center justify-center" style="background:var(--text-primary);">
+          <span class="text-[9px] font-black" style="color:var(--bg-base);">SD</span>
+        </span>
+        <span class="text-sm font-semibold">Skill_Drill</span>
+      </div>
+      <p class="text-xs" style="color:var(--text-tertiary);">
+        © 2024 Skill_Drill. Built for engineers who mean business.
+      </p>
+    </div>
+  </footer>
+</div>

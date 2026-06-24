@@ -1,0 +1,249 @@
+<!-- Skill_Drill — Analytics -->
+<div class="min-h-screen" style="background:var(--bg-base); color:var(--text-primary);">
+  <sd-navbar />
+
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="flex items-center justify-center min-h-[60vh]">
+      <div class="text-center space-y-4">
+        <svg class="w-10 h-10 mx-auto sd-spin" fill="none" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="var(--border-subtle)" stroke-width="3"/>
+          <path stroke="var(--accent-cyan)" stroke-width="3" stroke-linecap="round"
+                d="M12 2a10 10 0 015.77 1.84"/>
+        </svg>
+        <p class="text-sm" style="color:var(--text-tertiary);">Compiling your results…</p>
+      </div>
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (hasFailed()) {
+    <div class="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+      <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24"
+           stroke="var(--accent-violet)" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <p class="text-base font-semibold">Could not load results</p>
+      <p class="text-sm" style="color:var(--text-tertiary);">
+        The session may have expired or something went wrong.
+      </p>
+      <a routerLink="/dashboard" class="sd-btn-primary">Back to Dashboard</a>
+    </div>
+  }
+
+  <!-- Result -->
+  @if (result(); as r) {
+    <main class="max-w-3xl mx-auto px-6 py-10 space-y-8 sd-slide-up">
+
+      <!-- Header -->
+      <div>
+        <p class="text-xs uppercase tracking-[.18em] font-semibold mb-1" style="color:var(--accent-violet);">
+          Session Complete
+        </p>
+        <h1 class="text-2xl font-bold tracking-tight">Analytics Report</h1>
+        <p class="text-sm mt-1" style="color:var(--text-secondary);">
+          {{ r.role }} &middot; {{ r.qaLogs.length }} questions
+        </p>
+      </div>
+
+      <!-- Score strip -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+        <!-- Final score -->
+        <div class="sd-card md:col-span-2 p-6 flex flex-col items-center justify-center gap-2 text-center">
+          <p class="text-xs uppercase tracking-widest font-medium" style="color:var(--text-tertiary);">Session Score</p>
+          <p class="text-6xl font-black leading-none" [class]="scoreColor">
+            {{ r.finalScore | number:'1.1-1' }}
+          </p>
+          <p class="text-xs" style="color:var(--text-tertiary);">out of 10</p>
+          <span class="mt-1 sd-badge-violet">{{ scoreLabel }}</span>
+        </div>
+
+        <!-- Elo -->
+        <div class="sd-card p-5 flex flex-col justify-between gap-3">
+          <p class="text-xs uppercase tracking-widest font-medium" style="color:var(--text-tertiary);">Elo Change</p>
+          <div>
+            @if (r.eloChange != null) {
+              <p class="text-3xl font-black" [class]="eloChangeColor">
+                {{ r.eloChange >= 0 ? '+' : '' }}{{ r.eloChange }}
+              </p>
+            } @else {
+              <p class="text-3xl font-black" style="color:var(--text-tertiary);">—</p>
+            }
+            <p class="text-xs mt-1" style="color:var(--text-tertiary);">
+              New rating: <span class="font-semibold" style="color:var(--text-primary);">{{ r.newElo | number }}</span>
+            </p>
+          </div>
+          <div class="h-1 rounded-full overflow-hidden" style="background:var(--border-subtle);">
+            <div class="h-full rounded-full transition-all duration-700"
+                 [style.background]="(r.eloChange ?? 0) >= 0 ? 'var(--accent-emerald)' : '#ef4444'"
+                 [style.width.%]="Math.min((Math.abs(r.eloChange ?? 0) / 50) * 100, 100)">
+            </div>
+          </div>
+        </div>
+
+        <!-- Time -->
+        <div class="sd-card p-5 flex flex-col justify-between gap-3">
+          <p class="text-xs uppercase tracking-widest font-medium" style="color:var(--text-tertiary);">Time Spent</p>
+          <p class="text-3xl font-black">{{ formattedTime }}</p>
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"
+               style="color:var(--border-subtle);">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- QA Log -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-base font-semibold">Question &amp; Answer Review</h2>
+          <span class="text-xs" style="color:var(--text-tertiary);">{{ r.qaLogs.length }} entries</span>
+        </div>
+
+        @for (log of r.qaLogs; track log.id; let i = $index) {
+          <div class="sd-card overflow-hidden transition-all duration-200"
+               [style.borderColor]="expandedLog() === log.id ? 'var(--accent-violet)' : 'var(--border-subtle)'">
+
+            <!-- Row header -->
+            <button (click)="toggleLog(log.id)"
+                    class="w-full text-left px-6 py-4 flex items-center gap-4 transition-colors duration-150"
+                    style="background:transparent;"
+                    onmouseenter="this.style.background='var(--bg-surface-alt)'"
+                    onmouseleave="this.style.background='transparent'">
+
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                   style="background:var(--accent-violet-lt);">
+                <span class="text-xs font-bold" style="color:var(--accent-violet);">Q{{ i + 1 }}</span>
+              </div>
+
+              <p class="flex-1 text-sm font-medium text-left line-clamp-1">{{ log.question }}</p>
+
+              <div class="flex items-center gap-3 shrink-0">
+                <span class="text-xl font-black"
+                      [style.color]="metricColor(log.aiCritique.score)">
+                  {{ log.aiCritique.score }}<span class="text-xs font-normal" style="color:var(--text-tertiary);">/10</span>
+                </span>
+                <svg class="w-4 h-4 transition-transform duration-200"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                     style="color:var(--text-tertiary);"
+                     [class.rotate-180]="expandedLog() === log.id">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </div>
+            </button>
+
+            <!-- Expanded body -->
+            @if (expandedLog() === log.id) {
+              <div style="border-top:1px solid var(--border-subtle);">
+
+                <!-- Question -->
+                <div class="px-6 py-4 space-y-1.5">
+                  <p class="text-xs uppercase tracking-widest font-medium" style="color:var(--text-tertiary);">Question</p>
+                  <p class="text-sm leading-relaxed">{{ log.question }}</p>
+                </div>
+
+                <!-- Your answer -->
+                <div class="px-6 py-4 space-y-1.5"
+                     style="border-top:1px solid var(--border-subtle); background:var(--bg-surface-alt);">
+                  <p class="text-xs uppercase tracking-widest font-medium" style="color:var(--text-tertiary);">Your Answer</p>
+                  <p class="text-sm leading-relaxed" style="color:var(--text-secondary);">{{ log.userAnswer }}</p>
+                </div>
+
+                <!-- Critique -->
+                <div class="px-6 py-5 space-y-5" style="border-top:1px solid var(--border-subtle);">
+
+                  <!-- Metric bars -->
+                  <div class="grid grid-cols-3 gap-4">
+                    @for (metric of [
+                      {label:'Clarity',  val: log.aiCritique.clarity},
+                      {label:'Depth',    val: log.aiCritique.depth},
+                      {label:'Accuracy', val: log.aiCritique.accuracy}
+                    ]; track metric.label) {
+                      <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs">
+                          <span style="color:var(--text-secondary);">{{ metric.label }}</span>
+                          <span class="font-semibold">{{ metric.val }}/10</span>
+                        </div>
+                        <div class="h-1.5 rounded-full overflow-hidden" style="background:var(--border-subtle);">
+                          <div class="h-full rounded-full transition-all duration-700"
+                               [style.background]="metricColor(metric.val)"
+                               [style.width.%]="metric.val * 10">
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Strengths -->
+                  @if (log.aiCritique.strengths.length) {
+                    <div class="space-y-2">
+                      <p class="text-xs font-semibold uppercase tracking-wider"
+                         style="color:var(--accent-emerald);">✓ Strengths</p>
+                      @for (s of log.aiCritique.strengths; track s) {
+                        <p class="text-sm flex items-start gap-2" style="color:var(--text-secondary);">
+                          <span class="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
+                                style="background:var(--accent-emerald);"></span>
+                          {{ s }}
+                        </p>
+                      }
+                    </div>
+                  }
+
+                  <!-- Feedback -->
+                  @if (log.aiCritique.feedbackLines.length) {
+                    <div class="space-y-2">
+                      <p class="text-xs font-semibold uppercase tracking-wider"
+                         style="color:var(--text-tertiary);">Feedback</p>
+                      @for (line of log.aiCritique.feedbackLines; track line) {
+                        <p class="text-sm flex items-start gap-2" style="color:var(--text-secondary);">
+                          <span class="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
+                                style="background:var(--border-structural);"></span>
+                          {{ line }}
+                        </p>
+                      }
+                    </div>
+                  }
+
+                  <!-- Missing topics -->
+                  @if (log.aiCritique.missingTopics.length) {
+                    <div class="rounded-xl p-4 space-y-2"
+                         style="background:rgba(245,158,11,.07); border:1px solid rgba(245,158,11,.25);">
+                      <p class="text-xs font-semibold uppercase tracking-wider text-amber-500">⚠ Missing Topics</p>
+                      <div class="flex flex-wrap gap-2">
+                        @for (t of log.aiCritique.missingTopics; track t) {
+                          <span class="px-2.5 py-1 rounded-lg text-xs font-medium text-amber-600"
+                                style="background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.25);">
+                            {{ t }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Footer CTA -->
+      <div class="flex flex-col sm:flex-row gap-3 pt-2" style="border-top:1px solid var(--border-subtle);">
+        <a routerLink="/dashboard" class="sd-btn-primary justify-center">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Back to Dashboard
+        </a>
+        <button (click)="startNew()" class="sd-btn-ghost justify-center">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Start New Session
+        </button>
+      </div>
+    </main>
+  }
+</div>

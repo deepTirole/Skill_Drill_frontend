@@ -1,0 +1,326 @@
+<!-- Skill_Drill — Dashboard (Premium) -->
+<div class="min-h-screen" style="background:var(--bg-base); color:var(--text-primary);">
+  <sd-navbar />
+
+  <main class="max-w-6xl mx-auto px-6 py-10 space-y-8">
+
+    <!-- Page header -->
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        @if (user$ | async; as user) {
+          <h1 class="text-2xl font-bold tracking-tight">
+            Welcome back, {{ user?.fullname ? user.fullname.split(' ')[0] : 'user' }}
+          </h1>
+        } @else {
+          <h1 class="text-2xl font-bold tracking-tight">Dashboard</h1>
+        }
+        <p class="mt-1 text-sm" style="color:var(--text-secondary);">
+          Your command center for technical interview mastery.
+        </p>
+      </div>
+      <button (click)="startInterview()" [disabled]="isStartingSession()"
+              class="sd-btn-primary shrink-0 hidden md:inline-flex">
+        @if (isStartingSession()) {
+          <svg class="w-4 h-4 sd-spin" fill="none" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/>
+            <path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+          </svg>
+        } @else {
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        }
+        Start Drill Session
+      </button>
+    </div>
+
+    <!-- Main grid -->
+    <div class="grid lg:grid-cols-3 gap-6">
+
+      <!-- ── Left col ─────────────────────────────────────────────────────── -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- Resume drop zone -->
+        <div class="sd-card overflow-hidden">
+          <div class="px-6 py-4" style="border-bottom:1px solid var(--border-subtle);">
+            <h2 class="text-sm font-semibold">Resume Intelligence</h2>
+            <p class="text-xs mt-0.5" style="color:var(--text-secondary);">
+              Drop your PDF resume to enable skill extraction and tailored questions
+            </p>
+          </div>
+
+          @if (uploadState$ | async; as state) {
+
+            @if (state.status === 'IDLE' || state.status === 'ERROR') {
+              <div (dragover)="onDragOver($event)" (dragleave)="onDragLeave()" (drop)="onDrop($event)"
+                   class="relative m-5 rounded-xl flex flex-col items-center justify-center py-14 px-6 cursor-pointer group transition-all duration-200 scan-active"
+                   [style.border]="'2px dashed ' + (isDragging() ? 'var(--accent-cyan)' : 'var(--border-subtle)')"
+                   [style.background]="isDragging() ? 'color-mix(in srgb, var(--accent-cyan) 5%, transparent)' : 'transparent'">
+
+                <input type="file" accept=".pdf"
+                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                       (change)="onFileInput($event)" />
+
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-transform duration-200 group-hover:scale-105"
+                     style="background:var(--accent-violet-lt);">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"
+                       style="color:var(--accent-violet);">
+                    <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                  </svg>
+                </div>
+
+                <p class="text-sm font-semibold">Drop your resume here</p>
+                <p class="text-xs mt-1" style="color:var(--text-tertiary);">PDF only · Max 5 MB</p>
+
+                @if (state.status === 'ERROR') {
+                  <p class="mt-3 text-xs text-red-500">{{ state.errorMessage }}</p>
+                }
+              </div>
+            }
+
+            @if (state.status === 'UPLOADING' || state.status === 'PROCESSING') {
+              <div class="m-5 rounded-xl p-5 space-y-3"
+                   style="background:var(--bg-surface-alt); border:1px solid var(--border-subtle);">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                       style="background:var(--accent-violet-lt);">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                         style="color:var(--accent-violet);">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold truncate">{{ state.fileName }}</p>
+                    <p class="text-xs mt-0.5" style="color:var(--text-secondary);">
+                      @if (state.status === 'UPLOADING') { Uploading… {{ state.progress }}% }
+                      @else { Processing with AI · Extracting keywords… }
+                    </p>
+                  </div>
+                </div>
+                <div class="h-1.5 rounded-full overflow-hidden" style="background:var(--border-subtle);">
+                  <div class="h-full rounded-full transition-all duration-300"
+                       style="background:linear-gradient(90deg,var(--accent-cyan),var(--accent-violet));"
+                       [style.width.%]="state.progress ?? 0">
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (state.status === 'COMPLETE') {
+              <div class="m-5 rounded-xl p-4 flex items-center gap-3"
+                   style="background:color-mix(in srgb,var(--accent-emerald) 8%,transparent);
+                          border:1px solid color-mix(in srgb,var(--accent-emerald) 25%,transparent);">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                     style="background:color-mix(in srgb,var(--accent-emerald) 15%,transparent);">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"
+                       style="color:var(--accent-emerald);">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-semibold" style="color:var(--accent-emerald);">Resume processed</p>
+                  <p class="text-xs mt-0.5 truncate"
+                     style="color:color-mix(in srgb,var(--accent-emerald) 70%,transparent);">
+                    {{ state.fileName }} · Skills extracted
+                  </p>
+                </div>
+                <label class="relative shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all duration-150"
+                       style="background:var(--bg-surface-alt); border:1px solid var(--border-subtle); color:var(--text-secondary);">
+                  <input type="file" accept=".pdf"
+                         class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                         (change)="onFileInput($event)" />
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12a9 9 0 11-2.64-6.36"/>
+                    <polyline points="21 3 21 9 15 9"/>
+                  </svg>
+                  Replace
+                </label>
+              </div>
+            }
+          }
+        </div>
+
+        <!-- Skill keywords -->
+        <div class="sd-card overflow-hidden">
+          <div class="px-6 py-4 flex items-center justify-between"
+               style="border-bottom:1px solid var(--border-subtle);">
+            <div>
+              <h2 class="text-sm font-semibold">Extracted Skills</h2>
+              <p class="text-xs mt-0.5" style="color:var(--text-secondary);">Proficiency-mapped from your resume</p>
+            </div>
+            @if (keywords$ | async; as kws) {
+              <span class="text-xs" style="color:var(--text-tertiary);">{{ kws.length }} skills</span>
+            }
+          </div>
+          <div class="p-6">
+            @if (keywords$ | async; as kws) {
+              @if (kws.length) {
+                <div class="flex flex-wrap gap-2">
+                  @for (kw of kws; track kw.id) {
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all hover:scale-105 cursor-default"
+                          [class]="proficiencyColor(kw.proficiency)">
+                      {{ kw.skillName }}
+                      <span class="opacity-55 text-[10px]">{{ kw.proficiency | titlecase }}</span>
+                    </span>
+                  }
+                </div>
+              } @else {
+                <p class="text-sm text-center py-8" style="color:var(--text-tertiary);">
+                  Upload your resume to extract skills
+                </p>
+              }
+            }
+          </div>
+        </div>
+
+        <!-- Activity heatmap -->
+        <div class="sd-card overflow-hidden">
+          <div class="px-6 py-4" style="border-bottom:1px solid var(--border-subtle);">
+            <h2 class="text-sm font-semibold">Interview Activity</h2>
+            <p class="text-xs mt-0.5" style="color:var(--text-secondary);">52-week session heatmap</p>
+          </div>
+          <div class="p-6 overflow-x-auto">
+            <div class="flex gap-1 min-w-max">
+              @for (week of heatmapData() | slice:0:52; track $index; let wi = $index) {
+                <div class="flex flex-col gap-1">
+                  @for (di of [0,1,2,3,4,5,6]; track di) {
+                    <div class="w-3 h-3 rounded-sm cursor-default"
+                         [class]="heatIntensity((heatmapData()[wi * 7 + di])?.count ?? 0)"
+                         [title]="(heatmapData()[wi * 7 + di])?.date ?? ''">
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+            <div class="flex items-center gap-2 mt-3">
+              <span class="text-[10px]" style="color:var(--text-tertiary);">Less</span>
+              @for (n of [0,1,2,3,4]; track n) {
+                <div class="w-3 h-3 rounded-sm" [class]="heatIntensity(n)"></div>
+              }
+              <span class="text-[10px]" style="color:var(--text-tertiary);">More</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Right col ─────────────────────────────────────────────────────── -->
+      <div class="space-y-6">
+
+        <!-- Profile card -->
+        @if (user$ | async; as user) {
+          <div class="sd-card p-6 space-y-5">
+
+            <div class="flex flex-col items-center text-center gap-3">
+              <div class="w-16 h-16 rounded-2xl flex items-center justify-center"
+                   style="background:linear-gradient(135deg,var(--accent-violet),var(--accent-cyan));">
+                <span class="text-2xl font-black text-white">{{ user?.fullname?.charAt(0) }}</span>
+              </div>
+              <div>
+                <p class="font-semibold">{{ user.fullname }}</p>
+                <p class="text-xs mt-0.5" style="color:var(--text-tertiary);">{{ user.username }}</p>
+              </div>
+            </div>
+
+            <!-- Elo rating -->
+            <div class="rounded-xl p-4 text-center"
+                 style="background:var(--bg-surface-alt); border:1px solid var(--border-subtle);">
+              <p class="text-xs uppercase tracking-widest mb-1" style="color:var(--text-tertiary);">Elo Rating</p>
+              <p class="text-4xl font-black">{{ user.rating | number }}</p>
+
+              @if (ratingHistory$ | async; as history) {
+                @if (history.length >= 2) {
+                  @let delta = history[history.length - 1].ratingAfter - history[history.length - 2].ratingAfter;
+                  <div class="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-md"
+                       [style.background]="delta >= 0
+                         ? 'color-mix(in srgb,var(--accent-emerald) 10%,transparent)'
+                         : 'color-mix(in srgb,#f87171 10%,transparent)'"
+                       [style.border]="delta >= 0
+                         ? '1px solid color-mix(in srgb,var(--accent-emerald) 25%,transparent)'
+                         : '1px solid color-mix(in srgb,#f87171 25%,transparent)'">
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"
+                         [style.color]="delta >= 0 ? 'var(--accent-emerald)' : '#f87171'">
+                      <path [attr.d]="delta >= 0 ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'"/>
+                    </svg>
+                    <span class="text-xs font-semibold"
+                          [style.color]="delta >= 0 ? 'var(--accent-emerald)' : '#f87171'">
+                      {{ delta >= 0 ? '+' : '' }}{{ delta }} last session
+                    </span>
+                  </div>
+                }
+              }
+            </div>
+
+            <!-- Rating progression graph -->
+            <div>
+              <p class="text-xs mb-2" style="color:var(--text-tertiary);">Rating progression</p>
+              @if (ratingHistory$ | async; as history) {
+                <sd-rating-graph [data]="history" />
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Start drill card -->
+        <div class="sd-card p-6 space-y-4">
+          <div>
+            <h3 class="text-sm font-semibold">Start a Drill</h3>
+            <p class="text-xs mt-0.5" style="color:var(--text-secondary);">Select a role to begin your session</p>
+          </div>
+
+          <!-- Job role selector -->
+          <div class="space-y-2">
+            <div class="grid grid-cols-1 gap-1.5 max-h-52 overflow-y-auto pr-1"
+                 style="scrollbar-width:thin; scrollbar-color:var(--border-subtle) transparent;">
+              @for (role of jobRoles; track role) {
+                <button (click)="selectedRole.set(role)"
+                        class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-left transition-all duration-150 border"
+                        [style.background]="selectedRole() === role ? 'color-mix(in srgb,var(--accent-violet) 12%,transparent)' : 'var(--bg-surface-alt)'"
+                        [style.borderColor]="selectedRole() === role ? 'var(--accent-violet)' : 'var(--border-subtle)'"
+                        [style.color]="selectedRole() === role ? 'var(--accent-violet)' : 'var(--text-secondary)'">
+                  <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                       [style.color]="selectedRole() === role ? 'var(--accent-violet)' : 'var(--text-tertiary)'">
+                    <rect x="2" y="7" width="20" height="14" rx="2"/>
+                    <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
+                  </svg>
+                  {{ role }}
+                  @if (selectedRole() === role) {
+                    <svg class="w-3 h-3 ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"
+                         style="color:var(--accent-violet);">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+
+          <button (click)="startInterview(selectedRole())" [disabled]="isStartingSession() || !selectedRole()"
+                  class="sd-btn-primary w-full h-10 justify-center"
+                  [style.opacity]="!selectedRole() ? '0.5' : '1'">
+            @if (isStartingSession()) {
+              <svg class="w-4 h-4 sd-spin" fill="none" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/>
+                <path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+              Preparing…
+            } @else {
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              {{ selectedRole() ? 'Begin Session' : 'Select a Role' }}
+            }
+          </button>
+        </div>
+
+        <!-- Mobile start button -->
+        <button (click)="startInterview(selectedRole())" [disabled]="isStartingSession() || !selectedRole()"
+                class="sd-btn-primary w-full justify-center md:hidden">
+          {{ selectedRole() ? 'Begin Session' : 'Select a Role' }}
+        </button>
+
+      </div>
+    </div>
+  </main>
+</div>
