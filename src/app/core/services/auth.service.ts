@@ -165,10 +165,10 @@ export class AuthService {
     });
   }
 
-  verifyOtp(payload: OtpPayload): Observable<any> {
+  verifyOtp(payload: OtpPayload): Observable<{ message: string }> {
     this.patch({ isLoading: true });
     return this.http
-      .post<any>("http://localhost:8080/mail/verify-otp", payload)
+      .post<{message : string}>("http://localhost:8080/mail/verify-otp", payload)
   }
 
   resendOtp(email: string): Observable<OtpResponse> {

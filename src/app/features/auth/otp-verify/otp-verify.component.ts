@@ -88,7 +88,9 @@ export class OtpVerifyComponent implements OnInit, OnDestroy {
 
     this.auth.verifyOtp({ email: this.email(), otp: this.otp() }).subscribe({
       next: (res) => {
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/auth/login'], {
+          queryParams: { registered: true }
+        });
       },
       error: (err) => {
         this.isLoading.set(false);
