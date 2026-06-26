@@ -165,7 +165,7 @@ export class AuthService {
     });
   }
 
-  verifyOtp(payload: OtpPayload): Observable<{ message: string }> {
+  verifyOtp(payload: OtpPayload): Observable<{ message: string }> {-
     this.patch({ isLoading: true });
     return this.http
       .post<{message : string}>("http://localhost:8080/mail/verify-otp", payload)

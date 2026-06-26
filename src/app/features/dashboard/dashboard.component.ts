@@ -15,6 +15,7 @@ import { InterviewService } from '../../core/services/interview.service';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { Keyword, HeatmapDay, EloDataPoint, Interview } from '../../shared/models';
 import { RatingGraphComponent } from '../interview/ratingpoint/ratingpoint.component';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 type Difficulty = 'EASY' | 'MEDIUM' | 'HARD' | 'EXPERT';
 
@@ -71,6 +72,12 @@ export class DashboardComponent implements OnInit {
     this.resume.fetchKeywords().subscribe();
     this.resume.fetchResumeMeta().subscribe();
     this.resume.fetchRatingHistory().subscribe();
+  }
+
+  readonly keywords = toSignal(this.keywords$, { initialValue: [] });
+
+  get hasResume(): boolean {
+      return this.keywords().length > 0;
   }
 
   // ── Drag & Drop ──────────────────────────────────────────────────────────
