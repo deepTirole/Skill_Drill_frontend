@@ -108,7 +108,7 @@ export class OtpVerifyComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.errorMsg.set("Invalid code. Please try again.");
+        this.errorMsg.set(err?.error?.message ?? "Invalid code. Please try again.");
         this.otpInputRef?.reset();
       },
     });
@@ -116,11 +116,13 @@ export class OtpVerifyComponent implements OnInit, OnDestroy {
 
   resendOtp(): void {
     if (!this.canResend()) return;
-
+    console.log("Resending OTP to...", this.email());
     this.successMsg.set(null);
     this.auth.resendOtp(this.email()).subscribe({
-      next: () => {
-        this.successMsg.set("A new code has been sent to your inbox.");
+      next: (res) => {
+        this.successMsg.set(
+          res?.message ?? "OTP resent successfully! Please check your email.",
+        );
         this.startCountdown();
         this.otpInputRef?.reset();
       },

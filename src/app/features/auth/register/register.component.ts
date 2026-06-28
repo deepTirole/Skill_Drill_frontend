@@ -67,7 +67,7 @@ export class RegisterComponent {
     this.auth.register({ fullname, username, password }).subscribe({
       error: (err) => {
         this.isLoading.set(false);
-        this.errorMsg.set(err?.error?.message ?? 'Registration failed. Please try again.');
+        this.errorMsg.set(err?.error?.error ?? 'Registration failed. Please try again.');
       }
     });
   }

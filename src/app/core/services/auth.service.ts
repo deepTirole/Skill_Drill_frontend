@@ -172,9 +172,7 @@ export class AuthService {
   }
 
   resendOtp(email: string): Observable<OtpResponse> {
-    return this.http.post<OtpResponse>("http://localhost:8080/mail/resend-otp", {
-      params: new HttpParams().set("email", email),
-    });
+    return this.http.post<OtpResponse>("http://localhost:8080/mail/resend-otp", email);
   }
 
   fetchMe(): Observable<User> {
