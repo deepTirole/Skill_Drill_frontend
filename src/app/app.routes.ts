@@ -33,6 +33,16 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/auth/otp-verify/otp-verify.component').then(m => m.OtpVerifyComponent),
       },
+      {
+        path: 'forgot-password',
+        loadComponent: () =>
+          import('./features/auth/reset-pass/forget-password/forget-password.component').then(m => m.ForgotPasswordComponent),
+      },
+      {
+        path: 'reset-password',
+        loadComponent: () =>
+          import('./features/auth/reset-pass/reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
+      },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],
   },
