@@ -43,6 +43,11 @@ export interface OtpResponse {
   success: boolean;
 }
 
+export interface ResetPassword {
+  token: string;
+  password: string;
+}
+
 export interface Interview {
   id: number;
   userId: string;

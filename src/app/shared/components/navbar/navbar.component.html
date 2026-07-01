@@ -59,13 +59,7 @@
              style="background: var(--text-primary); color: var(--bg-base);">
             Dashboard
           </a>
-          <button (click)="logout()"
-                  class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150"
-                  style="color: var(--text-secondary); border: 1px solid var(--border-subtle);"
-                  onmouseenter="this.style.color='var(--text-primary)'; this.style.background='var(--bg-surface-alt)';"
-                  onmouseleave="this.style.color='var(--text-secondary)'; this.style.background='transparent';">
-            Log out
-          </button>
+          <app-navbar-dropdown />
         </div>
       } @else {
         <a routerLink="/auth/login"

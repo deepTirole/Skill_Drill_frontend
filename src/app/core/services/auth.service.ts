@@ -21,6 +21,7 @@ import {
   OtpPayload,
   User,
   OtpResponse,
+  ResetPassword,
 } from "../../shared/models";
 
 interface AuthResponse {
@@ -173,6 +174,18 @@ export class AuthService {
 
   resendOtp(email: string): Observable<OtpResponse> {
     return this.http.post<OtpResponse>("http://localhost:8080/mail/resend-otp", email);
+  }
+
+  // Forgot password methods
+
+  forgotPassword(email: string): Observable<{message: string}> {
+    return this.http.get<{message: string}>(`${this.BASE}/forget-password`, {
+      params: new HttpParams().set("email", email),
+    });
+  }
+
+  resetPassword(payload: ResetPassword): Observable<{message: string}> {
+    return this.http.post<{message: string}>(`${this.BASE}/reset-password`, payload);
   }
 
   fetchMe(): Observable<User> {

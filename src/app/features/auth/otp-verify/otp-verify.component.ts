@@ -120,6 +120,7 @@ export class OtpVerifyComponent implements OnInit, OnDestroy {
     this.successMsg.set(null);
     this.auth.resendOtp(this.email()).subscribe({
       next: (res) => {
+        this.errorMsg.set(null);
         this.successMsg.set(
           res?.message ?? "OTP resent successfully! Please check your email.",
         );
@@ -127,6 +128,7 @@ export class OtpVerifyComponent implements OnInit, OnDestroy {
         this.otpInputRef?.reset();
       },
       error: (err) => {
+        this.successMsg.set(null)
         this.errorMsg.set(
           err?.error?.message ?? "Failed to resend. Please try again.",
         );

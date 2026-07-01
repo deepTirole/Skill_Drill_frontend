@@ -2,81 +2,123 @@
 // Skill_Drill — Application Routes
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { Routes } from '@angular/router';
-import { authGuard, guestGuard } from './core/guards/auth.guard';
+import { Routes } from "@angular/router";
+import { authGuard, guestGuard } from "./core/guards/auth.guard";
 
 export const routes: Routes = [
   // ── Public Landing ────────────────────────────────────────────────────────
   {
-    path: '',
+    path: "",
     loadComponent: () =>
-      import('./features/home/home.component').then(m => m.HomeComponent),
+      import("./features/home/home.component").then((m) => m.HomeComponent),
+  },
+
+  {
+    path: "forgot-password",
+    loadComponent: () =>
+      import("./features/auth/reset-pass/forget-password/forget-password.component").then(
+        (m) => m.ForgotPasswordComponent,
+      ),
+  },
+  {
+    path: "reset-password",
+    loadComponent: () =>
+      import("./features/auth/reset-pass/reset-password/reset-password.component").then(
+        (m) => m.ResetPasswordComponent,
+      ),
   },
 
   // ── Auth Feature ──────────────────────────────────────────────────────────
   {
-    path: 'auth',
+    path: "auth",
     canActivate: [guestGuard],
     children: [
       {
-        path: 'login',
+        path: "login",
         loadComponent: () =>
-          import('./features/auth/login/login.component').then(m => m.LoginComponent),
+          import("./features/auth/login/login.component").then(
+            (m) => m.LoginComponent,
+          ),
       },
       {
-        path: 'register',
+        path: "register",
         loadComponent: () =>
-          import('./features/auth/register/register.component').then(m => m.RegisterComponent),
+          import("./features/auth/register/register.component").then(
+            (m) => m.RegisterComponent,
+          ),
       },
       {
-        path: 'verify-otp',
+        path: "verify-otp",
         loadComponent: () =>
-          import('./features/auth/otp-verify/otp-verify.component').then(m => m.OtpVerifyComponent),
+          import("./features/auth/otp-verify/otp-verify.component").then(
+            (m) => m.OtpVerifyComponent,
+          ),
       },
+
       {
-        path: 'forgot-password',
+        path: "",
         loadComponent: () =>
-          import('./features/auth/reset-pass/forget-password/forget-password.component').then(m => m.ForgotPasswordComponent),
+          import("./shared/additional/not-found/not-found.component").then(
+            (m) => m.NotFoundComponent,
+          ),
+        pathMatch: "full",
       },
-      {
-        path: 'reset-password',
-        loadComponent: () =>
-          import('./features/auth/reset-pass/reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
-      },
-      { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],
   },
 
   // ── Dashboard ─────────────────────────────────────────────────────────────
   {
-    path: 'dashboard',
-    canActivate:[authGuard],
+    path: "dashboard",
+    canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+      import("./features/dashboard/dashboard.component").then(
+        (m) => m.DashboardComponent,
+      ),
   },
 
   // ── Interview — /interview and /interview/:id both load the same component
   {
-    path: 'interview',
-    canActivate:[authGuard],
+    path: "interview",
+    canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/interview/interview.component').then(m => m.InterviewComponent),
+      import("./features/interview/interview.component").then(
+        (m) => m.InterviewComponent,
+      ),
   },
   {
-    path: 'interview/:id',
-    canActivate:[authGuard],
+    path: "interview/:id",
+    canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/interview/interview.component').then(m => m.InterviewComponent),
+      import("./features/interview/interview.component").then(
+        (m) => m.InterviewComponent,
+      ),
   },
 
   // ── Analytics ─────────────────────────────────────────────────────────────
   {
-    path: 'analytics/:interviewId',
-    canActivate:[authGuard],
+    path: "analytics/:interviewId",
+    canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/analytics/analytics.component').then(m => m.AnalyticsComponent),
+      import("./features/analytics/analytics.component").then(
+        (m) => m.AnalyticsComponent,
+      ),
+  },
+
+  //_____ Not Found / 404 ─────────────────────────────────────────────────────────────
+  {
+    path: "not-found",
+    loadComponent: () =>
+      import("./shared/additional/not-found/not-found.component").then(
+        (m) => m.NotFoundComponent,
+      ),
   },
 
   // ── Fallback ──────────────────────────────────────────────────────────────
-  { path: '**', redirectTo: '' },
+  {
+    path: "**",
+    loadComponent: () =>
+      import("./shared/additional/not-found/not-found.component").then(
+        (m) => m.NotFoundComponent,
+      ),
+  },
 ];

@@ -8,11 +8,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
+import { NavbarDropdownComponent } from "./navbar-dropdown/navbar-dropdown.component";
 
 @Component({
   selector: 'sd-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, NavbarDropdownComponent],
   templateUrl: './navbar.component.html',
 })
 export class NavbarComponent {
