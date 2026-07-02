@@ -1,0 +1,89 @@
+<div class="min-h-screen px-6 py-10" style="background: var(--bg-base); color: var(--text-primary)">
+  <div class="max-w-2xl mx-auto space-y-6">
+
+    <!-- Header -->
+    <div class="space-y-1">
+      <h1 class="text-2xl font-bold tracking-tight">Profile</h1>
+      <p class="text-sm" style="color: var(--text-secondary)">Your public identity on Skill_Drill.</p>
+    </div>
+
+    @if (isLoading()) {
+      <div class="flex items-center justify-center py-20">
+        <svg class="w-6 h-6 animate-spin" fill="none" viewBox="0 0 24 24" style="color: var(--accent-cyan)">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+        </svg>
+      </div>
+    }
+
+    @if (!isLoading() && profile()) {
+
+      <!-- Avatar + name -->
+      <div class="rounded-2xl p-6 flex items-center gap-5"
+        style="background: var(--bg-surface); border: 1.5px solid var(--border-subtle)">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold shrink-0"
+          style="background: #3b82f6; color: #fff;">
+          {{ initials() }}
+        </div>
+        <div>
+          <h2 class="text-lg font-bold tracking-tight">{{ profile()!.fullname }}</h2>
+          <p class="text-sm mt-0.5" style="color: var(--text-secondary)">{{ profile()!.username }}</p>
+          <span class="inline-block mt-2 text-[11px] font-semibold uppercase tracking-widest px-2.5 py-1 rounded-full"
+            style="background: rgba(6,182,212,0.1); color: var(--accent-cyan); border: 1px solid rgba(6,182,212,0.2)">
+            {{ profile()!.role === 'ROLE_STUDENT' ? 'Student' : profile()!.role }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="rounded-2xl p-5 space-y-1"
+          style="background: var(--bg-surface); border: 1.5px solid var(--border-subtle)">
+          <p class="text-xs font-semibold uppercase tracking-widest" style="color: var(--text-tertiary)">ELO Rating</p>
+          <p class="text-3xl font-bold tracking-tight">{{ profile()!.rating }}</p>
+        </div>
+        <div class="rounded-2xl p-5 space-y-1"
+          style="background: var(--bg-surface); border: 1.5px solid var(--border-subtle)">
+          <p class="text-xs font-semibold uppercase tracking-widest" style="color: var(--text-tertiary)">Member since</p>
+          <p class="text-lg font-semibold">{{ profile()!.createdAt | date: 'MMM d, yyyy' }}</p>
+        </div>
+      </div>
+
+      <!-- Account info -->
+      <div class="rounded-2xl p-6 space-y-4"
+        style="background: var(--bg-surface); border: 1.5px solid var(--border-subtle)">
+        <h3 class="text-sm font-semibold" style="color: var(--text-primary)">Account</h3>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between py-2.5"
+            style="border-bottom: 1px solid var(--border-subtle)">
+            <span class="text-xs font-semibold uppercase tracking-widest"
+              style="color: var(--text-tertiary)">Full name</span>
+            <span class="text-sm" style="color: var(--text-primary)">{{ profile()!.fullname }}</span>
+          </div>
+          <div class="flex items-center justify-between py-2.5"
+            style="border-bottom: 1px solid var(--border-subtle)">
+            <span class="text-xs font-semibold uppercase tracking-widest"
+              style="color: var(--text-tertiary)">Email</span>
+            <span class="text-sm" style="color: var(--text-primary)">{{ profile()!.username }}</span>
+          </div>
+          <div class="flex items-center justify-between py-2.5">
+            <span class="text-xs font-semibold uppercase tracking-widest"
+              style="color: var(--text-tertiary)">Role</span>
+            <span class="text-sm" style="color: var(--text-primary)">
+              {{ profile()!.role === 'ROLE_STUDENT' ? 'Student' : profile()!.role }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="flex justify-end">
+        <a routerLink="/settings" class="sd-btn-primary h-10 px-5 justify-center text-sm">
+          Edit settings
+        </a>
+      </div>
+
+    }
+
+  </div>
+</div>

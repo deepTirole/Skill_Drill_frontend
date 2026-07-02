@@ -76,6 +76,16 @@ export const routes: Routes = [
       ),
   },
 
+  // ── User profile ─────────────────────────────────────────────────────────────
+  {
+    path: "profile",
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import("./features/profile/user-profile/user-profile.component").then(
+        (m) => m.ProfileComponent,
+      ),
+  },
+
   // ── Interview — /interview and /interview/:id both load the same component
   {
     path: "interview",
