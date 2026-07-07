@@ -1,0 +1,418 @@
+<sd-navbar />
+<!-- <app-navbar-dropdown /> -->
+<div
+  class="min-h-screen px-6 py-10"
+  style="background: var(--bg-base); color: var(--text-primary)"
+>
+  <div class="max-w-2xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="space-y-1">
+      <h1 class="text-2xl font-bold tracking-tight">Settings</h1>
+      <p class="text-sm" style="color: var(--text-secondary)">
+        Manage your account details.
+      </p>
+    </div>
+
+    <!-- Global success / error -->
+    @if (successMsg()) {
+      <div
+        class="flex items-start gap-3 p-3.5 rounded-xl"
+        style="
+          background: rgba(34, 197, 94, 0.07);
+          border: 1px solid rgba(34, 197, 94, 0.2);
+        "
+      >
+        <svg
+          class="w-4 h-4 mt-0.5 shrink-0 text-green-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
+        <p class="text-sm text-green-500">{{ successMsg() }}</p>
+      </div>
+    }
+
+    <!-- ── Section 1: Update name ───────────────────────────── -->
+    <div
+      class="rounded-2xl p-6 space-y-5"
+      style="
+        background: var(--bg-surface);
+        border: 1.5px solid var(--border-subtle);
+      "
+    >
+      <div>
+        <h2 class="text-base font-semibold">Full name</h2>
+        <p class="text-xs mt-0.5" style="color: var(--text-tertiary)">
+          Update your display name.
+        </p>
+      </div>
+
+      <form
+        [formGroup]="nameForm"
+        (ngSubmit)="updateName()"
+        class="space-y-4"
+        novalidate
+      >
+        <div class="space-y-1.5">
+          <label
+            class="text-xs font-semibold uppercase tracking-widest"
+            style="color: var(--text-tertiary)"
+            >Full name</label
+          >
+          <input
+            formControlName="fullname"
+            type="text"
+            placeholder="Your full name"
+            class="w-full h-11 px-4 rounded-xl text-sm transition-all duration-150 focus:outline-none"
+            style="
+              background: var(--bg-base);
+              border: 1.5px solid var(--border-subtle);
+              color: var(--text-primary);
+            "
+            onfocus="
+              this.style.borderColor = 'var(--accent-cyan)';
+              this.style.boxShadow =
+                '0 0 0 3px color-mix(in srgb, var(--accent-cyan) 15%, transparent)';
+            "
+            onblur="
+              this.style.borderColor = 'var(--border-subtle)';
+              this.style.boxShadow = 'none';
+            "
+          />
+          @if (
+            nameForm.get("fullname")?.invalid &&
+            nameForm.get("fullname")?.touched
+          ) {
+            <p class="text-xs text-red-500">Full name is required.</p>
+          }
+        </div>
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            [disabled]="nameLoading() || nameForm.invalid"
+            class="sd-btn-primary h-10 px-5 justify-center text-sm"
+          >
+            @if (nameLoading()) {
+              <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                />
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+            } @else {
+              Save name
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ── Section 2: Change email ──────────────────────────── -->
+    <div
+      class="rounded-2xl p-6 space-y-5"
+      style="
+        background: var(--bg-surface);
+        border: 1.5px solid var(--border-subtle);
+      "
+    >
+      <div>
+        <h2 class="text-base font-semibold">Email address</h2>
+        <p class="text-xs mt-0.5" style="color: var(--text-tertiary)">
+          Update the email you use to sign in.
+        </p>
+      </div>
+
+      <form
+        [formGroup]="emailForm"
+        (ngSubmit)="updateEmail()"
+        class="space-y-4"
+        novalidate
+      >
+        <div class="space-y-1.5">
+          <label
+            class="text-xs font-semibold uppercase tracking-widest"
+            style="color: var(--text-tertiary)"
+            >New email</label
+          >
+          <input
+            formControlName="username"
+            type="email"
+            placeholder="you@company.com"
+            class="w-full h-11 px-4 rounded-xl text-sm transition-all duration-150 focus:outline-none"
+            style="
+              background: var(--bg-base);
+              border: 1.5px solid var(--border-subtle);
+              color: var(--text-primary);
+            "
+            onfocus="
+              this.style.borderColor = 'var(--accent-cyan)';
+              this.style.boxShadow =
+                '0 0 0 3px color-mix(in srgb, var(--accent-cyan) 15%, transparent)';
+            "
+            onblur="
+              this.style.borderColor = 'var(--border-subtle)';
+              this.style.boxShadow = 'none';
+            "
+            [class.!border-red-400]="
+              emailForm.get('username')?.invalid &&
+              emailForm.get('username')?.touched
+            "
+          />
+          @if (
+            emailForm.get("username")?.invalid &&
+            emailForm.get("username")?.touched
+          ) {
+            <p class="text-xs text-red-500">Enter a valid email address.</p>
+          }
+        </div>
+
+        @if (emailError()) {
+          <p class="text-xs text-red-500">{{ emailError() }}</p>
+        }
+
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            [disabled]="emailLoading() || emailForm.invalid"
+            class="sd-btn-primary h-10 px-5 justify-center text-sm"
+          >
+            @if (emailLoading()) {
+              <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                />
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+            } @else {
+              Save email
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ── Section 3: Change password ──────────────────────── -->
+    <div
+      class="rounded-2xl p-6 space-y-5"
+      style="
+        background: var(--bg-surface);
+        border: 1.5px solid var(--border-subtle);
+      "
+    >
+      <div>
+        <h2 class="text-base font-semibold">Password</h2>
+        <p class="text-xs mt-0.5" style="color: var(--text-tertiary)">
+          Must be at least 8 characters.
+        </p>
+      </div>
+
+      <form
+        [formGroup]="passwordForm"
+        (ngSubmit)="updatePassword()"
+        class="space-y-4"
+        novalidate
+      >
+        <div class="space-y-1.5">
+          <label
+            class="text-xs font-semibold uppercase tracking-widest"
+            style="color: var(--text-tertiary)"
+            >Current password</label
+          >
+          <div class="relative">
+            <input
+              formControlName="currentPassword"
+              [type]="showCurrent() ? 'text' : 'password'"
+              placeholder="Enter current password"
+              class="w-full h-11 px-4 pr-11 rounded-xl text-sm transition-all duration-150 focus:outline-none"
+              style="
+                background: var(--bg-base);
+                border: 1.5px solid var(--border-subtle);
+                color: var(--text-primary);
+              "
+              onfocus="
+                this.style.borderColor = 'var(--accent-cyan)';
+                this.style.boxShadow =
+                  '0 0 0 3px color-mix(in srgb, var(--accent-cyan) 15%, transparent)';
+              "
+              onblur="
+                this.style.borderColor = 'var(--border-subtle)';
+                this.style.boxShadow = 'none';
+              "
+            />
+            <button
+              type="button"
+              (click)="toggleShowCurrent()"
+              class="absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-150"
+              style="color: var(--text-tertiary)"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                @if (showCurrent()) {
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19M1 1l22 22"
+                  />
+                } @else {
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                }
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label
+            class="text-xs font-semibold uppercase tracking-widest"
+            style="color: var(--text-tertiary)"
+            >New password</label
+          >
+          <div class="relative">
+            <input
+              formControlName="newPassword"
+              [type]="showNew() ? 'text' : 'password'"
+              placeholder="Min. 8 characters"
+              class="w-full h-11 px-4 pr-11 rounded-xl text-sm transition-all duration-150 focus:outline-none"
+              style="
+                background: var(--bg-base);
+                border: 1.5px solid var(--border-subtle);
+                color: var(--text-primary);
+              "
+              onfocus="
+                this.style.borderColor = 'var(--accent-cyan)';
+                this.style.boxShadow =
+                  '0 0 0 3px color-mix(in srgb, var(--accent-cyan) 15%, transparent)';
+              "
+              onblur="
+                this.style.borderColor = 'var(--border-subtle)';
+                this.style.boxShadow = 'none';
+              "
+            />
+            <button
+              type="button"
+              (click)="toggleShowNew()"
+              class="absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-150"
+              style="color: var(--text-tertiary)"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                @if (showNew()) {
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19M1 1l22 22"
+                  />
+                } @else {
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                }
+              </svg>
+            </button>
+          </div>
+          @if (
+            passwordForm.get("newPassword")?.invalid &&
+            passwordForm.get("newPassword")?.touched
+          ) {
+            <p class="text-xs text-red-500">
+              Password must be at least 8 characters.
+            </p>
+          }
+        </div>
+
+        @if (passwordError()) {
+          <p class="text-xs text-red-500">{{ passwordError() }}</p>
+        }
+
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            [disabled]="passwordLoading() || passwordForm.invalid"
+            class="sd-btn-primary h-10 px-5 justify-center text-sm"
+          >
+            @if (passwordLoading()) {
+              <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                />
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+            } @else {
+              Update password
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ── Section 4: Danger zone ───────────────────────────── -->
+    <div
+      class="rounded-2xl p-6 space-y-4"
+      style="
+        background: var(--bg-surface);
+        border: 1.5px solid rgba(239, 68, 68, 0.25);
+      "
+    >
+      <div>
+        <h2 class="text-base font-semibold text-red-500">Danger zone</h2>
+        <p class="text-xs mt-0.5" style="color: var(--text-tertiary)">
+          Permanently delete your account and all associated data. This cannot
+          be undone.
+        </p>
+      </div>
+      <button
+        (click)="confirmDelete()"
+        class="h-10 px-5 rounded-xl text-sm font-semibold transition-all duration-150"
+        style="
+          background: rgba(239, 68, 68, 0.08);
+          color: #ef4444;
+          border: 1px solid rgba(239, 68, 68, 0.25);
+        "
+        onmouseenter="this.style.background = 'rgba(239,68,68,0.15)'"
+        onmouseleave="this.style.background = 'rgba(239,68,68,0.08)'"
+      >
+        Delete account
+      </button>
+    </div>
+  </div>
+</div>

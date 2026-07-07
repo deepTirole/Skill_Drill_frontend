@@ -1,0 +1,49 @@
+<sd-navbar />
+<div class="min-h-screen pb-16" style="background:var(--bg-base); color:var(--text-primary);">
+  <sd-navbar />
+
+  <main class="max-w-6xl mx-auto px-4 pt-12 sm:px-6 lg:px-8">
+    
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-6">
+        Bridging the Gap Between <br/>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+          Knowledge and Execution.
+        </span>
+      </h1>
+      <p class="text-lg leading-relaxed text-gray-400">
+        Skill_Drill is an advanced, AI-driven mock interview platform designed to provide candidates with accessible, highly personalized technical practice. By combining intelligent resume parsing with real-time semantic evaluation, we help developers master their next interview.
+      </p>
+    </div>
+
+    <div class="mb-20">
+      <h2 class="text-2xl font-bold text-white mb-8 border-b border-gray-800 pb-4">Architectural Highlights</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        @for (feature of features; track feature.title) {
+          <div class="rounded-xl border bg-gray-900/40 p-6 hover:border-cyan-500/50 transition-colors duration-300" style="border-color:var(--border-subtle);">
+            <div class="w-12 h-12 rounded-lg bg-cyan-500/10 flex items-center justify-center mb-5 border border-cyan-500/20">
+              <svg class="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="feature.icon" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-white mb-2">{{ feature.title }}</h3>
+            <p class="text-sm text-gray-400 leading-relaxed">{{ feature.description }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-bold text-white mb-8 border-b border-gray-800 pb-4">The Technology Stack</h2>
+      <div class="flex flex-wrap gap-3">
+        @for (tech of techStack; track tech.name) {
+          <div class="px-4 py-2 rounded-full border bg-gray-800/50 flex flex-col items-center justify-center" style="border-color:var(--border-subtle);">
+            <span class="text-sm font-bold text-white">{{ tech.name }}</span>
+            <span class="text-xs text-gray-500 mt-0.5">{{ tech.category }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+  </main>
+</div>

@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../shared/models';
+import { NavbarComponent } from "../../../shared/components/navbar/navbar.component";
 
 // interface UserProfile {
 //   id: number;
@@ -18,7 +19,7 @@ import { User } from '../../../shared/models';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, NavbarComponent],
   templateUrl: './user-profile.component.html',
 })
 export class ProfileComponent implements OnInit {

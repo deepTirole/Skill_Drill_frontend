@@ -198,6 +198,14 @@ export class AuthService {
     );
   }
 
+  updateName(payload: { fullname: string }): Observable<{message: string}> {
+    return this.http.put<{message: string}>(`${this.BASE_USER}/update`, payload)
+  }
+
+  updatePassword(payload: { currentPassword: string; newPassword: string }): Observable<{message: string}> {
+    return this.http.put<{message: string}>(`${this.BASE_USER}/update`, payload)
+  }
+
   updateRating(newRating: number): void {
     const user = this._state$.value.user;
     if (!user) return;

@@ -56,7 +56,7 @@ export interface Interview {
   status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
   totalQuestions: number;
   currentQuestion: number;
-  sessionScore?: number;     // 0–10
+  finalScore?: number;     // 0–10
   eloChange?: number;
   createdAt: string;
   completedAt?: string;
@@ -69,7 +69,7 @@ export interface Question {
   interviewId: string;
   index: number;
   prompt: string;
-  category: string;          // e.g. "Algorithms", "System Design"
+  category: string;
   expectedTopics: string[];
 }
 

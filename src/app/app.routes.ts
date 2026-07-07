@@ -14,6 +14,12 @@ export const routes: Routes = [
   },
 
   {
+    path: "home",
+    loadComponent: () =>
+      import("./features/home/home.component").then((m) => m.HomeComponent),
+  },
+
+  {
     path: "forgot-password",
     loadComponent: () =>
       import("./features/auth/reset-pass/forget-password/forget-password.component").then(
@@ -86,6 +92,26 @@ export const routes: Routes = [
       ),
   },
 
+  // ── User profile settings ─────────────────────────────────────────────────────────────
+  {
+    path: "settings",
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import("./features/settings/settings.component").then(
+        (m) => m.SettingsComponent,
+      ),
+  },
+
+  // ── User History ─────────────────────────────────────────────────────────────
+  {
+    path: "history",
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import("./features/analytics/interview-histroy/interview-histroy.component").then(
+        (m) => m.HistoryComponent,
+      ),
+  },
+
   // ── Interview — /interview and /interview/:id both load the same component
   {
     path: "interview",
@@ -111,6 +137,15 @@ export const routes: Routes = [
     loadComponent: () =>
       import("./features/analytics/analytics.component").then(
         (m) => m.AnalyticsComponent,
+      ),
+  },
+
+  //_____ about ─────────────────────────────────────────────────────────────
+  {
+    path: "about",
+    loadComponent: () =>
+      import("./shared/additional/about/about.component").then(
+        (m) => m.AboutComponent,
       ),
   },
 
