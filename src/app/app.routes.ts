@@ -102,6 +102,14 @@ export const routes: Routes = [
       ),
   },
 
+  {
+    path: "verify-otp",
+    loadComponent: () =>
+      import("./features/auth/otp-verify/otp-verify.component").then(
+        (m) => m.OtpVerifyComponent,
+      ),
+  },
+
   // ── User History ─────────────────────────────────────────────────────────────
   {
     path: "history",

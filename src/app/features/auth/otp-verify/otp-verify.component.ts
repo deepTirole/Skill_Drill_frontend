@@ -30,6 +30,7 @@ export class OtpVerifyComponent implements OnInit, OnDestroy {
   @ViewChild(OtpInputComponent) otpInputRef?: OtpInputComponent;
 
   readonly email = signal("");
+  readonly context = signal<string>("");
   readonly otp = signal("");
   readonly isLoading = signal(false);
   readonly errorMsg = signal<string | null>(null);
@@ -42,7 +43,9 @@ export class OtpVerifyComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const emailParam = this.route.snapshot.queryParamMap.get("email") ?? "";
+    const contextParam = this.route.snapshot.queryParamMap.get("context") ?? "";
     this.email.set(emailParam);
+    this.context.set(contextParam);
     // this.sendOtp();
     this.startCountdown();
   }
@@ -94,6 +97,25 @@ export class OtpVerifyComponent implements OnInit, OnDestroy {
 
     this.isLoading.set(true);
     this.errorMsg.set(null);
+
+    if(this.context() === "update-email") {
+      this.auth.completeEmailUpdate({ email: this.email(), otp: this.otp() }).subscribe({
+        next: (res) => {
+          this.successMsg.set(
+            "Email updated successfully! Redirecting...",
+          );
+          setTimeout(() => {
+            this.router.navigate(["/settings"]);
+          }, 1500);
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          this.errorMsg.set(err?.error?.message ?? "Failed to update email. Please try again.");
+        }
+      });
+
+      return ;
+    }
 
     this.auth.verifyOtp({ email: this.email(), otp: this.otp() }).subscribe({
       next: (res) => {

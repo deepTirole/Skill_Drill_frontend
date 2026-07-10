@@ -166,7 +166,7 @@ export class AuthService {
     });
   }
 
-  verifyOtp(payload: OtpPayload): Observable<{ message: string }> {-
+  verifyOtp(payload: OtpPayload): Observable<{ message: string }> {
     this.patch({ isLoading: true });
     return this.http
       .post<{message : string}>("http://localhost:8080/mail/verify-otp", payload)
@@ -198,6 +198,8 @@ export class AuthService {
     );
   }
 
+  // --------Update Methods---------------------------------------------------
+
   updateName(payload: { fullname: string }): Observable<{message: string}> {
     return this.http.put<{message: string}>(`${this.BASE_USER}/update`, payload)
   }
@@ -205,6 +207,26 @@ export class AuthService {
   updatePassword(payload: { currentPassword: string; newPassword: string }): Observable<{message: string}> {
     return this.http.put<{message: string}>(`${this.BASE_USER}/update`, payload)
   }
+
+  updateEmail(payload: { password: string; email: string }): Observable<{message: string}> {
+    return this.http.post<{message: string}>(`${this.BASE_USER}/update-email`, payload);
+  }
+
+  completeEmailUpdate(payload: { email: string; otp: string }): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.BASE_USER}/complete-email-update`, payload).pipe(
+      tap(({ token, user }) => {
+        this.persist(token, user);
+        this.patch({ token, user, isAuthenticated: true, isLoading: false });
+        
+      }),
+      catchError((err) => {
+        this.patch({ isLoading: false });
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  // -----------User Utility Methods---------------------------------------------------
 
   updateRating(newRating: number): void {
     const user = this._state$.value.user;
@@ -214,9 +236,19 @@ export class AuthService {
     this.patch({ user: updated });
   }
 
-  logout(): void {
+  /**
+   * Wipes storage and resets auth state to logged-out, without navigating.
+   * Use this when the caller wants to handle its own redirect (e.g. after
+   * changing the password or email, where the backend invalidates the
+   * current token and a specific follow-up screen/query param is needed).
+   */
+  clearSession(): void {
     this.clearStorage();
     this._state$.next(INITIAL_STATE);
+  }
+
+  logout(): void {
+    this.clearSession();
     this.router.navigate(["/"]);
   }
 }

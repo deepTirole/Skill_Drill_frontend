@@ -15,7 +15,12 @@ import { NavbarDropdownComponent } from "../../shared/components/navbar/navbar-d
 @Component({
   selector: "app-settings",
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, NavbarComponent, NavbarDropdownComponent],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    NavbarComponent,
+    NavbarDropdownComponent,
+  ],
   templateUrl: "./settings.component.html",
 })
 export class SettingsComponent implements OnInit {
@@ -27,6 +32,7 @@ export class SettingsComponent implements OnInit {
   readonly successMsg = signal<string | null>(null);
   readonly emailError = signal<string | null>(null);
   readonly passwordError = signal<string | null>(null);
+  readonly passwordSuccess = signal<string | null>(null);
 
   readonly nameLoading = signal(false);
   readonly emailLoading = signal(false);
@@ -34,13 +40,15 @@ export class SettingsComponent implements OnInit {
 
   readonly showCurrent = signal(false);
   readonly showNew = signal(false);
+  readonly showEmailPassword = signal(false);
 
   readonly nameForm = this.fb.nonNullable.group({
     fullname: ["", Validators.required],
   });
 
   readonly emailForm = this.fb.nonNullable.group({
-    username: ["", [Validators.required, Validators.email]],
+    password: ["", Validators.required],
+    email: ["", [Validators.required, Validators.email]],
   });
 
   readonly passwordForm = this.fb.nonNullable.group({
@@ -54,7 +62,7 @@ export class SettingsComponent implements OnInit {
       .subscribe({
         next: (user) => {
           this.nameForm.patchValue({ fullname: user.fullname });
-          this.emailForm.patchValue({ username: user.username });
+          this.emailForm.patchValue({ email: user.username });
         },
       });
   }
@@ -65,6 +73,10 @@ export class SettingsComponent implements OnInit {
 
   toggleShowNew(): void {
     this.showNew.update((v) => !v);
+  }
+
+  toggleShowEmailPassword(): void {
+    this.showEmailPassword.update((v) => !v);
   }
 
   private showSuccess(msg: string): void {
@@ -85,9 +97,11 @@ export class SettingsComponent implements OnInit {
       },
       error: (err) => {
         this.nameLoading.set(false);
-        this.nameForm.setErrors(err?.error?.errors ?? { update: "Failed to update name." });
-      }
-    })
+        this.nameForm.setErrors(
+          err?.error?.errors ?? { update: "Failed to update name." },
+        );
+      },
+    });
   }
 
   updateEmail(): void {
@@ -97,20 +111,25 @@ export class SettingsComponent implements OnInit {
     }
     this.emailLoading.set(true);
     this.emailError.set(null);
-    this.http
-      .patch("/api/users/me/email", this.emailForm.getRawValue())
-      .subscribe({
-        next: () => {
-          this.emailLoading.set(false);
-          this.showSuccess("Email updated.");
-        },
-        error: (err) => {
-          this.emailLoading.set(false);
-          this.emailError.set(
-            err?.error?.message ?? "That email is already in use.",
-          );
-        },
-      });
+    this.auth.updateEmail(this.emailForm.getRawValue()).subscribe({
+      next: (res) => {
+        this.emailLoading.set(false);
+        this.router.navigate(["/verify-otp"], {
+          queryParams: {
+            email: this.emailForm.get("email")?.value,
+            context: "update-email",
+          },
+        });
+        this.emailForm.patchValue({ password: "" });
+      },
+      error: (err) => {
+        this.emailLoading.set(false);
+        this.emailError.set(
+          err?.error?.message ??
+            "Current password is incorrect or that email is already in use.",
+        );
+      },
+    });
   }
 
   updatePassword(): void {
@@ -120,21 +139,23 @@ export class SettingsComponent implements OnInit {
     }
     this.passwordLoading.set(true);
     this.passwordError.set(null);
-    this.auth
-      .updatePassword(this.passwordForm.getRawValue())
-      .subscribe({
-        next: () => {
-          this.passwordLoading.set(false);
-          this.showSuccess("Password updated.");
-          this.passwordForm.reset();
-        },
-        error: (err) => {
-          this.passwordLoading.set(false);
-          this.passwordError.set(
-            err?.error?.message ?? "Current password is incorrect.",
-          );
-        },
-      });
+    this.passwordSuccess.set(null);
+    this.auth.updatePassword(this.passwordForm.getRawValue()).subscribe({
+      next: () => {
+        this.passwordLoading.set(false);
+        this.passwordForm.reset();
+        // this.auth.clearSession();
+        // this.router.navigate(["/auth/login"], {
+        //   queryParams: { reason: "password_updated" },
+        // });
+      },
+      error: (err) => {
+        this.passwordLoading.set(false);
+        this.passwordError.set(
+          err?.error?.message ?? "Current password is incorrect.",
+        );
+      },
+    });
   }
 
   confirmDelete(): void {
