@@ -479,8 +479,8 @@
         <div class="space-y-2">
           <div
             class="grid grid-cols-1 gap-1.5 max-h-52 overflow-y-auto pr-1"
-            [class.opacity-40]="!hasResume"
-            [class.pointer-events-none]="!hasResume"
+            [class.opacity-40]="hasMissingResume"
+            [class.pointer-events-none]="hasMissingResume"
             style="
               scrollbar-width: thin;
               scrollbar-color: var(--border-subtle) transparent;
@@ -539,7 +539,7 @@
           </div>
 
           <!-- Warning message outside the button -->
-          @if (!hasResume) {
+          @if (hasMissingResume) {
             <p class="text-xs text-yellow-400 text-center">
               ⚠️ Upload your resume first to start a session
             </p>
@@ -547,9 +547,9 @@
 
           <button
             (click)="startInterview(selectedRole())"
-            [disabled]="!hasResume || isStartingSession() || !selectedRole()"
-            [class.opacity-50]="!hasResume || !selectedRole()"
-            [class.cursor-not-allowed]="!hasResume || !selectedRole()"
+            [disabled]="hasMissingResume || isStartingSession() || !selectedRole()"
+            [class.opacity-50]="hasMissingResume || !selectedRole()"
+            [class.cursor-not-allowed]="hasMissingResume || !selectedRole()"
             class="sd-btn-primary w-full h-10 justify-center"
           >
             @if (isStartingSession()) {
@@ -580,7 +580,7 @@
                 <polygon points="5 3 19 12 5 21 5 3" />
               </svg>
               {{
-                !hasResume
+                hasMissingResume
                   ? "Upload Resume First"
                   : selectedRole()
                     ? "Begin Session"
@@ -593,13 +593,13 @@
         <!-- Mobile start button -->
         <button
           (click)="startInterview(selectedRole())"
-          [disabled]="!hasResume || isStartingSession() || !selectedRole()"
-          [class.opacity-50]="!hasResume || !selectedRole()"
-          [class.cursor-not-allowed]="!hasResume"
+          [disabled]="hasMissingResume || isStartingSession() || !selectedRole()"
+          [class.opacity-50]="hasMissingResume || !selectedRole()"
+          [class.cursor-not-allowed]="hasMissingResume"
           class="sd-btn-primary w-full justify-center md:hidden"
         >
           {{
-            !hasResume
+            hasMissingResume
               ? "Upload Resume First"
               : selectedRole()
                 ? "Begin Session"

@@ -12,7 +12,7 @@ import { RatingPoint } from '../../features/interview/ratingpoint/ratingpoint.co
 
 export interface ResumeMetaDto {
   filename: string;
-  timestamp: string; // ISO string from LocalDateTime
+  timestamp: string;
 }
 
 @Injectable({ providedIn: 'root' })

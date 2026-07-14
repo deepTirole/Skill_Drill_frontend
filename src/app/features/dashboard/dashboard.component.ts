@@ -10,7 +10,7 @@ import {
 import { CommonModule, SlicePipe } from "@angular/common";
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { ResumeService } from '../../core/services/resume.service';
+import { ResumeMetaDto, ResumeService } from '../../core/services/resume.service';
 import { InterviewService } from '../../core/services/interview.service';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { Keyword, HeatmapDay, EloDataPoint, Interview } from '../../shared/models';
@@ -42,6 +42,7 @@ export class DashboardComponent implements OnInit {
   readonly heatmapData = signal<HeatmapDay[]>(this.generateMockHeatmap());
   readonly eloHistory  = signal<EloDataPoint[]>(this.generateMockElo());
   readonly sessions    = signal<Interview[]>([]);
+  readonly resumeMeta  = signal<ResumeMetaDto | null>(null);
   readonly isDragging  = signal(false);
 
   readonly selectedRole      = signal<string>('');
@@ -70,14 +71,17 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.auth.fetchMe().subscribe();
     this.resume.fetchKeywords().subscribe();
-    this.resume.fetchResumeMeta().subscribe();
+    this.resume.fetchResumeMeta().subscribe({
+      next: (meta) => this.resumeMeta.set(meta),
+      error: () => this.resumeMeta.set(null),
+    });
     this.resume.fetchRatingHistory().subscribe();
   }
 
   readonly keywords = toSignal(this.keywords$, { initialValue: [] });
 
-  get hasResume(): boolean {
-      return this.keywords().length > 0;
+  get hasMissingResume(): boolean {
+      return this.resumeMeta() === null;
   }
 
   // ── Drag & Drop ──────────────────────────────────────────────────────────
