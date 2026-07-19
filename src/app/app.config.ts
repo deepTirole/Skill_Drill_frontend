@@ -11,7 +11,7 @@ import {
   withFetch
 } from '@angular/common/http';
 import { routes } from './app.routes';
-import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
+import { cookieInterceptor } from './core/interceptors/jwt.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,7 +28,7 @@ export const appConfig: ApplicationConfig = {
     // HTTP client with functional JWT interceptor (no circular deps)
     provideHttpClient(
       withFetch(),
-      withInterceptors([jwtInterceptor])
+      withInterceptors([cookieInterceptor])
     ),
   ],
 };
