@@ -2,8 +2,10 @@
 // Skill_Drill — Application Routes
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { Routes } from "@angular/router";
+import { RouterModule, Routes } from "@angular/router";
 import { authGuard, guestGuard } from "./core/guards/auth.guard";
+import { NgModelGroup } from "@angular/forms";
+import { NgModule } from "@angular/core";
 
 export const routes: Routes = [
   // ── Public Landing ────────────────────────────────────────────────────────
@@ -175,3 +177,12 @@ export const routes: Routes = [
       ),
   },
 ];
+
+@NgModule({
+  imports: [
+    RouterModule.forRoot(routes, { 
+      useHash: true
+    })
+  ],
+  exports: [RouterModule] })
+export class AppRoutingModule {}
