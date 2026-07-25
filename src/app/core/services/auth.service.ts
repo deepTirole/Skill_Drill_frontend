@@ -45,8 +45,9 @@ const USER_KEY = "sd_user";
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly BASE = "http://localhost:8080/auth";
-  private readonly BASE_USER = "http://localhost:8080/user";
+  private readonly BASE = "https://api.skill-drill.dev/auth";
+  private readonly BASE_USER = "https://api.skill-drill.dev/user";
+  private readonly MAIL = "https://api.skill-drill.dev/mail";
 
   // ── Single Source of Truth State Stream ────────────────────────────────────
   private readonly _state$ = new BehaviorSubject<AuthState>(
@@ -152,7 +153,7 @@ export class AuthService {
   }
 
   sendOtp(email: string): Observable<OtpResponse> {
-    return this.http.get<OtpResponse>("http://localhost:8080/mail/send-otp", {
+    return this.http.get<OtpResponse>(`${this.MAIL}/send-otp`, {
       params: new HttpParams().set("email", email),
     });
   }
@@ -160,14 +161,14 @@ export class AuthService {
   verifyOtp(payload: OtpPayload): Observable<{ message: string }> {
     this.patch({ isLoading: true });
     return this.http.post<{ message: string }>(
-      "http://localhost:8080/mail/verify-otp",
+      `${this.MAIL}/verify-otp`,
       payload,
     );
   }
 
   resendOtp(email: string): Observable<OtpResponse> {
     return this.http.post<OtpResponse>(
-      "http://localhost:8080/mail/resend-otp",
+      `${this.MAIL}/resend-otp`,
       email,
     );
   }

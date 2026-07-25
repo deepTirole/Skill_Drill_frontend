@@ -44,7 +44,8 @@ export class HistoryComponent implements OnInit {
   private fetchHistory(): void {
     this.interviewSvc.fetchUserSessions().subscribe({
       next: (data) => {
-        this.interviews.set(data);
+        const filteredData = data.filter(session => session.status === 'COMPLETED');
+        this.interviews.set(filteredData);
         this.isLoading.set(false);
       },
       error: (err) => {

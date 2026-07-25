@@ -18,7 +18,8 @@ export interface ResumeMetaDto {
 @Injectable({ providedIn: 'root' })
 export class ResumeService {
   private readonly http = inject(HttpClient);
-  private readonly BASE = 'http://localhost:8080/resume';
+  private readonly BASE = 'https://api.skill-drill.dev/resume';
+  private readonly BASE_User = 'https://api.skill-drill.dev/user';
 
   authService = inject(AuthService);
   
@@ -55,7 +56,7 @@ export class ResumeService {
   }
 
   fetchRatingHistory(): Observable<RatingPoint[]> {
-  return this.http.get<RatingPoint[]>('http://localhost:8080/user/get_sessions').pipe(
+  return this.http.get<RatingPoint[]>(`${this.BASE_User}/get_sessions`).pipe(
     tap(history => this._ratingHistory$.next(history)),
     catchError(() => of([]))
   );
