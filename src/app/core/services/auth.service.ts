@@ -45,9 +45,12 @@ const USER_KEY = "sd_user";
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly BASE = "https://api.skill-drill.dev/auth";
-  private readonly BASE_USER = "https://api.skill-drill.dev/user";
-  private readonly MAIL = "https://api.skill-drill.dev/mail";
+  // private readonly BASE = "https://api.skill-drill.dev/auth";
+  // private readonly BASE_USER = "https://api.skill-drill.dev/user";
+  // private readonly MAIL = "https://api.skill-drill.dev/mail";
+  private readonly BASE = "http://localhost:8080/auth";
+  private readonly BASE_USER = "http://localhost:8080/user";
+  private readonly MAIL = "http://localhost:8080/mail";
 
   // ── Single Source of Truth State Stream ────────────────────────────────────
   private readonly _state$ = new BehaviorSubject<AuthState>(

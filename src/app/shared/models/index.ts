@@ -53,7 +53,7 @@ export interface Interview {
   userId: string;
   jobRole: string;
   difficulty: 'EASY' | 'MEDIUM' | 'HARD' | 'EXPERT';
-  status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+  status: 'Pending' | 'IN_PROGRESS' | 'Completed';
   totalQuestions: number;
   currentQuestion: number;
   finalScore?: number;     // 0–10

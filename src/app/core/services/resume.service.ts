@@ -18,8 +18,10 @@ export interface ResumeMetaDto {
 @Injectable({ providedIn: 'root' })
 export class ResumeService {
   private readonly http = inject(HttpClient);
-  private readonly BASE = 'https://api.skill-drill.dev/resume';
-  private readonly BASE_User = 'https://api.skill-drill.dev/user';
+  // private readonly BASE = 'https://api.skill-drill.dev/resume';
+  // private readonly BASE_User = 'https://api.skill-drill.dev/user';
+  private readonly BASE = 'http://localhost:8080/resume';
+  private readonly BASE_User = 'http://localhost:8080/user';
 
   authService = inject(AuthService);
   

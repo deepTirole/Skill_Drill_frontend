@@ -45,7 +45,8 @@ const INITIAL_SESSION: InterviewSession = {
 @Injectable({ providedIn: "root" })
 export class InterviewService {
   private readonly http = inject(HttpClient);
-  private readonly BASE = "https://api.skill-drill.dev/interview";
+  // private readonly BASE = "https://api.skill-drill.dev/interview";
+  private readonly BASE = "http://localhost:8080/interview";
 
   constructor() {
     const saved = sessionStorage.getItem("sd_live_session");
