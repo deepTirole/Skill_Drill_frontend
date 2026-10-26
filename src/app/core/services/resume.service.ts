@@ -50,8 +50,10 @@ export class ResumeService {
           });
         }
       }),
-      catchError(() => {
+      catchError((err:any) => {
         // No resume found or user never uploaded — leave state as IDLE
+        if (err.status === 500)
+          return of()
         return of(null);
       })
     );

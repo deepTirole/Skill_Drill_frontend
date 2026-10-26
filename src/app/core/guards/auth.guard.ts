@@ -9,15 +9,14 @@ import { AuthService } from '../services/auth.service';
 
 /** Protects dashboard/interview routes; redirects to login if unauthenticated */
 export const authGuard: CanActivateFn = () => {
-  const auth   = inject(AuthService);
+  const auth = inject(AuthService);
   const router = inject(Router);
 
   return auth.isAuth$.pipe(
     take(1),
     map(isAuth => {
       if (isAuth) return true;
-      router.navigate(['/auth/login']);
-      return false;
+      return router.createUrlTree(['/auth/login']);
     })
   );
 };
@@ -31,8 +30,7 @@ export const guestGuard: CanActivateFn = () => {
     take(1),
     map(isAuth => {
       if (!isAuth) return true;
-      router.navigate(['/dashboard']);
-      return false;
+      return router.createUrlTree(['/dashboard']);
     })
   );
 };

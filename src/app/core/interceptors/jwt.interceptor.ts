@@ -29,9 +29,7 @@ export const cookieInterceptor: HttpInterceptorFn = (
     catchError((err: unknown) => {
       if (err instanceof HttpErrorResponse) {
         if (err.status === 401) {
-          // Cookie is either missing, expired, or rejected by the backend.
-          // Trigger the local UI state cleanup.
-          authService.clearLocalState(); 
+          authService.logout(); 
           router.navigate(['/auth/login'], {
             queryParams: { reason: 'session_expired' },
           });

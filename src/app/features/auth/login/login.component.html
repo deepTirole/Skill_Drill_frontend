@@ -267,6 +267,17 @@
         </button>
       </form>
 
+      <div class="flex flex-col items-center gap-4 mt-6">
+        <div class="relative w-full flex items-center">
+          <div class="flex-grow border-t border-gray-700"></div>
+          <span class="flex-shrink-0 mx-4 text-gray-400 text-sm">or</span>
+          <div class="flex-grow border-t border-gray-700"></div>
+        </div>
+
+        <!-- The container where Google will inject the button -->
+        <div #googleBtn></div>
+      </div>
+
       <div class="flex items-center gap-4">
         <div class="flex-1 h-px" style="background: var(--border-subtle)"></div>
         <span class="text-xs" style="color: var(--text-tertiary)">or</span>

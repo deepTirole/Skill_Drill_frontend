@@ -8,6 +8,8 @@ import { Router } from "@angular/router";
 import {
   BehaviorSubject,
   Observable,
+  of,
+  switchMap,
   tap,
   catchError,
   throwError,
@@ -137,6 +139,29 @@ export class AuthService {
       );
   }
 
+  loginWithGoogle(idToken: string): Observable<User> {
+    return this.http.post<AuthResponse | User>(
+      `${this.BASE}/oauth/google`,
+      { idToken },
+      {
+        withCredentials: true,
+      },
+    ).pipe(
+      switchMap((response) => {
+        const user = 'user' in response ? response.user : response;
+        return user?.id ? of(user) : this.fetchMe();
+      }),
+      tap((user) => {
+        this.persistUser(user);
+        this.patch({ user, isAuthenticated: true, isLoading: false });
+      }),
+      catchError((err) => {
+        this.patch({ isLoading: false });
+        return throwError(() => err);
+      }),
+    );
+  }
+
   register(payload: RegisterPayload): Observable<{ message: string }> {
     this.patch({ isLoading: true });
     return this.http
@@ -170,10 +195,7 @@ export class AuthService {
   }
 
   resendOtp(email: string): Observable<OtpResponse> {
-    return this.http.post<OtpResponse>(
-      `${this.MAIL}/resend-otp`,
-      email,
-    );
+    return this.http.post<OtpResponse>(`${this.MAIL}/resend-otp`, email);
   }
 
   // Forgot password methods
@@ -206,14 +228,20 @@ export class AuthService {
   // --------Update Methods---------------------------------------------------
 
   updateName(payload: { fullname: string }): Observable<{ message: string }> {
-    return this.http.put<{ message: string }>(`${this.BASE_USER}/update`, payload);
+    return this.http.put<{ message: string }>(
+      `${this.BASE_USER}/update`,
+      payload,
+    );
   }
 
   updatePassword(payload: {
     currentPassword: string;
     newPassword: string;
   }): Observable<{ message: string }> {
-    return this.http.put<{ message: string }>(`${this.BASE_USER}/update`, payload);
+    return this.http.put<{ message: string }>(
+      `${this.BASE_USER}/update`,
+      payload,
+    );
   }
 
   updateEmail(payload: {
@@ -278,8 +306,6 @@ export class AuthService {
       .post(`${this.BASE}/logout`, {}, { withCredentials: true })
       .pipe(
         catchError((err) => {
-          // Server call failed (network issue, already-expired cookie, etc.)
-          // — still proceed to clear local state below.
           return throwError(() => err);
         }),
       )
